@@ -51,11 +51,25 @@
 
 ## 🧭 Project Workflow
 
-```mermaid
-graph TD;
-    A[Vendor Lists Product] --> B[User Views Product on Marketplace]
-    B --> C[User Makes Purchase (ETH)]
-    C --> D[Blockchain Payment Triggered via Wallet]
-    D --> E[Inventory Database Updated]
-    E --> F[ML Model Predicts Demand]
-    F --> G[Product Reorder Suggested]
+```
+Smart-Vendor-Finder/
+├── client/              # Frontend (React)
+│   └── src/
+│       └── components/
+│           └── VendorList.jsx
+│           └── SearchBar.jsx
+│       └── App.jsx
+├── server/              # Backend (Node.js + Express)
+│   └── routes/
+│       └── vendors.js
+│   └── models/
+│       └── Vendor.js
+│   └── index.js or app.js
+├── contracts/           # Blockchain (Solidity)
+│   └── VendorPayment.sol
+├── ml/                  # Machine Learning scripts
+│   └── my_forecast.py
+│   └── api.py
+│   └── sales_data.csv
+└── README.md
+```
