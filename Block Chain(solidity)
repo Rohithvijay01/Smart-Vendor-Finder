@@ -1,0 +1,37 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/// @title Vendor Payment Smart Contract
+/// @notice Enables ETH payments from users to registered vendors
+/// @dev Can be expanded with vendor registration or product verification
+
+contract VendorPayment {
+    address public owner;
+
+    event VendorPaid(address indexed buyer, address indexed vendor, uint256 amount);
+    event Received(address, uint);
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    /// @notice Pay a registered vendor in ETH
+    /// @param vendor The payable address of the vendor
+    function payVendor(address payable vendor) external payable {
+        require(msg.value > 0, "Must send ETH to pay");
+        require(vendor != address(0), "Invalid vendor address");
+
+        vendor.transfer(msg.value);
+        emit VendorPaid(msg.sender, vendor, msg.value);
+    }
+
+    /// @notice Get the balance stored in the contract
+    /// @return uint The contract's current ETH balance
+    function getBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
+}
