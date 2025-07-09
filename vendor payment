@@ -1,0 +1,19 @@
+### `VendorPayment.sol`
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract VendorPayment {
+    event Paid(address indexed buyer, address indexed vendor, uint amount);
+
+    function payVendor(address payable vendor) external payable {
+        require(msg.value > 0, "Must send ETH");
+        vendor.transfer(msg.value);
+        emit Paid(msg.sender, vendor, msg.value);
+    }
+
+    function getBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+}
+```
