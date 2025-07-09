@@ -73,3 +73,17 @@ Smart-Vendor-Finder/
 │   └── sales_data.csv
 └── README.md
 ```
+
+
+![image](https://github.com/user-attachments/assets/e376e4c9-48a5-4702-8a96-98a570f8fe9e)
+
+
+
+
+![image](https://github.com/user-attachments/assets/dafc296e-46cc-4a42-b32a-d1edf68edd78)
+
+
+
+![image](https://github.com/user-attachments/assets/1074479c-00e7-48ed-aef3-abc8ef78ccf4)
+
+
