@@ -1,186 +1,61 @@
-# Project Structure Overview
-```
-Smart-Vendor-Finder/
-├── client/              # Frontend (React)
-│   └── src/
-│       └── components/
-│           └── VendorList.jsx
-│           └── SearchBar.jsx
-│       └── App.jsx
-├── server/              # Backend (Node.js + Express)
-│   └── routes/
-│       └── vendors.js
-│   └── models/
-│       └── Vendor.js
-│   └── index.js or app.js
-├── contracts/           # Blockchain (Solidity)
-│   └── VendorPayment.sol
-├── ml/                  # Machine Learning scripts
-│   └── my_forecast.py
-│   └── api.py
-│   └── sales_data.csv
-└── README.md
-```
+# Smart Vendor Finder – Blockchain-Based Supply Chain Management
+
+**Smart Vendor Finder** is an intelligent, blockchain-powered platform designed to streamline local vendor discovery, enable secure payments, and deliver demand-driven purchasing decisions using AI-powered forecasting. This solution integrates Web3 technology with traditional supply chain workflows to build trust, transparency, and efficiency.
 
 ---
 
-### `SearchBar.jsx`
-```jsx
-import React from 'react';
+## ✅ Key Features
 
-export default function SearchBar({ query, setQuery }) {
-  return (
-    <input
-      type="text"
-      placeholder="Search vendors by name or location..."
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
-      style={{
-        padding: '10px',
-        width: '100%',
-        marginBottom: '20px',
-        borderRadius: '8px',
-        border: '1px solid #ccc'
-      }}
-    />
-  );
-}
-```
+- 🛒 **Vendor Marketplace**  
+  Discover and verify nearby vendors offering the best products at the lowest price.
 
-### `VendorList.jsx`
-```jsx
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import SearchBar from './SearchBar';
+- 🔐 **Blockchain-Backed Payments**  
+  Enables decentralized transactions with Ethereum using WalletConnect and Alchemy.
 
-export default function VendorList() {
-  const [vendors, setVendors] = useState([]);
-  const [query, setQuery] = useState('');
+- 📦 **Smart Inventory Management**  
+  Seamless tracking of purchased products and dynamic stock updates.
 
-  useEffect(() => {
-    axios.get('/api/vendors')
-      .then(res => setVendors(res.data))
-      .catch(console.error);
-  }, []);
+- 📊 **Sales Prediction (AI + ML)**  
+  Predicts future demand using historical data and suggests restocking decisions.
 
-  const filtered = vendors.filter(v =>
-    v.name.toLowerCase().includes(query.toLowerCase()) ||
-    v.location.toLowerCase().includes(query.toLowerCase())
-  );
+- 📍 **Geo-Based Vendor Search (Extensible)**  
+  Can be integrated with maps to locate nearby suppliers in real-time.
 
-  return (
-    <div>
-      <h2>Available Vendors</h2>
-      <SearchBar query={query} setQuery={setQuery} />
-      <ul>
-        {filtered.map(v => (
-          <li key={v._id}>
-            <strong>{v.name}</strong> – {v.location} – {v.price} ETH
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-```
+- 🧠 **AI-Powered Insights**  
+  Recommends vendors and products based on demand forecasting and usage patterns.
 
-### `Vendor.js`
-```js
-const mongoose = require('mongoose');
+---
 
-const vendorSchema = new mongoose.Schema({
-  name: String,
-  location: String,
-  price: Number,
-  blockchainAddress: String
-});
+## ⚙️ Tech Stack
 
-module.exports = mongoose.model('Vendor', vendorSchema);
-```
+### 💻 Web Application (MERN Stack)
+- **MongoDB** – Database
+- **Express.js** – Backend APIs
+- **React.js** – Frontend Interface
+- **Node.js** – Server Runtime
 
-### `vendors.js` (Express Routes)
-```js
-const express = require('express');
-const router = express.Router();
-const Vendor = require('../models/Vendor');
+### 🔗 Blockchain & Web3
+- **Solidity** – Smart Contracts
+- **Foundry** – Contract Testing & Deployment
+- **Wagmi + WalletConnect** – Wallet Integrations
+- **Alchemy** – Ethereum Node Provider
 
-router.get('/vendors', async (req, res) => {
-  try {
-    const vendors = await Vendor.find();
-    res.json(vendors);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+### 🤖 Machine Learning & Forecasting
+- **Flask** – ML API Server
+- **Scikit-learn** – Forecasting Algorithms
+- **NumPy & Pandas** – Data Processing
+- **Jupyter Notebooks** – Model Development
 
-router.post('/vendors', async (req, res) => {
-  const { name, location, price, blockchainAddress } = req.body;
-  try {
-    const vendor = new Vendor({ name, location, price, blockchainAddress });
-    await vendor.save();
-    res.status(201).json(vendor);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+---
 
-module.exports = router;
-```
 
-### `my_forecast.py`
-```python
-import pandas as pd
-from sklearn.linear_model import LinearRegression
-import joblib
+## 🧭 Project Workflow
 
-def train_forecast(csv_path):
-    df = pd.read_csv(csv_path)
-    X = df[['month', 'promo']].values
-    y = df['sales'].values
-    model = LinearRegression().fit(X, y)
-    joblib.dump(model, 'ml/forecast_model.pkl')
-    print('Model trained and saved to forecast_model.pkl')
-
-if __name__ == '__main__':
-    train_forecast('ml/sales_data.csv')
-```
-
-### `api.py` (Flask ML API)
-```python
-from flask import Flask, request, jsonify
-import joblib
-import numpy as np
-
-app = Flask(__name__)
-model = joblib.load('forecast_model.pkl')
-
-@app.route('/predict', methods=['POST'])
-def predict():
-    data = request.get_json()
-    month = data['month']
-    promo = data['promo']
-    prediction = model.predict(np.array([[month, promo]]))
-    return jsonify({'predicted_sales': float(prediction[0])})
-
-if __name__ == '__main__':
-    app.run(debug=True)
-```
-
-### `VendorPayment.sol`
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-contract VendorPayment {
-    event Paid(address indexed buyer, address indexed vendor, uint amount);
-
-    function payVendor(address payable vendor) external payable {
-        require(msg.value > 0, "Must send ETH");
-        vendor.transfer(msg.value);
-        emit Paid(msg.sender, vendor, msg.value);
-    }
-
-    function getBalance() public view returns (uint) {
-        return address(this).balance;
-    }
-}
+```mermaid
+graph TD;
+    A[Vendor Lists Product] --> B[User Views Product on Marketplace]
+    B --> C[User Makes Purchase (ETH)]
+    C --> D[Blockchain Payment Triggered via Wallet]
+    D --> E[Inventory Database Updated]
+    E --> F[ML Model Predicts Demand]
+    F --> G[Product Reorder Suggested]
